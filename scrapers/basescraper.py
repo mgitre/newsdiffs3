@@ -65,15 +65,26 @@ class BaseScraper:
     # updates url of database entry
     def update_url(self, old_url, new_url):
         collection = get_database()[self.name]
+        if collection.find_one({"url": new_url}):
+            print(old_url, new_url, "already exists")
+            ##TODO: MERGING
+            collection.delete_one({"url": old_url})
+            return True
         collection.update_one({"url": old_url}, {"$set": {"url": new_url}})
+        print(old_url, new_url, "doesnt already exist, adding")
+        return False
 
     def process_article(self, url):
         try:
-            old_url = url
-            html, url = getHTML(url, return_updated_url=True)
-            if url != old_url:
-                self.update_url(old_url, url)
+            html = getHTML(url)
             soup = BeautifulSoup(html, features="lxml")
+
+            old_url = url
+            url = soup.find("meta", property="og:url").attrs['content']
+            if url != old_url:
+                new_url_exists = self.update_url(old_url, url)
+                if new_url_exists:
+                    return
 
             headline = None
             for name, attrs in self.headline_matches:
@@ -135,6 +146,8 @@ class BaseScraper:
             print(e)
 
     def update_article(self, url, version):
+        if not version:
+            return
         try:
             collection = get_database()[self.name]
             stored_article = get_article(collection, url)
