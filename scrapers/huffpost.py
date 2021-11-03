@@ -6,7 +6,7 @@ class HuffingtonPost(BaseScraper):
         self.url_format = r"https://(?:www\.)?huffpost\.com/entry/.+[a-z0-9]{24}"
         self.base_url = "https://huffpost.com"
         self.starting_pages = ["https://huffpost.com"]
-        self.name = "huffnpost"
+        self.name = "huffpost"
         self.url_exclusions = []
         self.headline_matches = [("h1", {"class": "headline"})]
         self.subhead_matches = [("div", {"class": "dek"})]

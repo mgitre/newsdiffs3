@@ -24,7 +24,7 @@ def get_article_urls_within_time(collection, days=7):
     timestamp = datetime.datetime.now() - datetime.timedelta(days=days)
 
     # finds url of any article that fits those requirements
-    articles = collection.find({"last_modified": {"&gt": timestamp}}, {"url": True})
+    articles = collection.find({"last_modified": {"$gt": timestamp}}, {"url": True})
 
     # returns the url of those
     return [article["url"] for article in articles]

@@ -17,8 +17,8 @@ class ArticleVersion:
         self_vars = vars(self)
         other_vars = vars(other)
         for key in weights:
-            if self_vars[key] == None:
-                if other_vars[key] == None:
+            if not self_vars[key] or not other_vars[key]:
+                if not self_vars[key] and not other_vars[key]:
                     total_similarity += weights[key]
                     similarities[key] = 1
                 continue
