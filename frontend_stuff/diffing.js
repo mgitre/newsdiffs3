@@ -12,11 +12,13 @@ function replace_html_tags(text){
     return text;
 }
 
+//self-eplanatory. reinserts html tags into text
 function reinsert_html_tags(text){
-    for (var i = 0; i < tag_array.length; i++){
-        tag = tag_array[i]
-        text = text.replace(new RegExp(String.fromCharCode(2048+i), 'g'), tag)
-    }
+    //update this regex if adding support for more tags
+    text = text.replace(/([\u0800-\u080d])/g, function(match){
+        var index = match.charCodeAt(0)-2048;
+        return tag_array[index];
+    })
     return text;
 }
 
@@ -29,11 +31,11 @@ function get_diffs(original, newer, cost=12){
     return diff;
 }
 
-//gets html from those diffs. this is janky rn. please dont be mad :)
+//gets html from those diffs. this is janky rn
 function get_html_from_diffs(diffs){
     var output='';
     for (const diff of diffs){
-        //if the segment is the same across both texts, append without any fuckery
+        //if the segment is the same across both texts, append without any modification
         var diff_type = diff[0];
         if (diff_type==0) {
             output += diff[1];
@@ -46,13 +48,13 @@ function get_html_from_diffs(diffs){
         //iterate over each segment in split
         for (var i=0; i < split.length; i++){
 
-            //if it's an html tag, don't fuck with it
+            //if it's an html tag, don't mess with it
             //this works because when splitting at a delimiter (while keeping
             //the delimiter) it alternates delimiters and content
             if (i%2==1){
                 output += split[i];
             }
-            //if it's not an html tag, fuck with it
+            //if it's not an html tag, mess with it
             else {
                 //this is janky as hell but who cares, i like it
                 //maps difftype to what tag to use, since deletion is -1 and insertion is 1
@@ -70,7 +72,7 @@ function get_html_from_diffs(diffs){
 }
 
 
-//this wraps everything, when in doubt just use this lol
+//this wraps everything, when in doubt just use this
 function get_nice_html_diff(text1, text2, cost=12){
     text1 = replace_html_tags(text1);
     text2 = replace_html_tags(text2);

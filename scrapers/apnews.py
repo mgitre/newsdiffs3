@@ -4,7 +4,6 @@ import re
 
 class APNews(BaseScraper):
     def __init__(self):
-        # self.url_format = r"https://www\.washingtonpost\.com/(?:politics|nation|world|elections|us-policy)/(?:[^/]*/)?(?:[^/]*/)?\d{4}/\d{2}/\d{2}/(?:[^/]*/|[^.]*.html)"
         self.url_format = r"https://apnews.com/article/.+[a-z0-9]{32}"
         self.base_url = "https://apnews.com"
         self.starting_pages = ["https://apnews.com"]

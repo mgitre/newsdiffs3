@@ -1,6 +1,6 @@
 import requests
 
-
+#gets html for url, header magic
 def getHTML(url, return_updated_url=False):
     headers = [
         {
