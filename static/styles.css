@@ -32,10 +32,11 @@ html, body {
 }
 
 .naventry a {
-    display: block;
+    display: inline-block;
     padding: 14px 16px;
     color: black;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .naventry a:hover {
@@ -94,6 +95,7 @@ ins {
     background-color: #eee;
     margin:4px 0px;
     border:1px solid grey;
+    padding: 8px 4px;
 }
 
 .checked{
