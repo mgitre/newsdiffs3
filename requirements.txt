@@ -1,0 +1,6 @@
+beautifulsoup4
+diff_match_patch
+Flask
+pymongo
+PyYAML
+requests
