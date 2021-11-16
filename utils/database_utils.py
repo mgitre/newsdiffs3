@@ -1,5 +1,5 @@
-import yaml
 import datetime
+import yaml
 from pymongo import MongoClient
 
 

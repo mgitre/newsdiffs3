@@ -1,5 +1,5 @@
-from scrapers.basescraper import BaseScraper
 import re
+from scrapers.basescraper import BaseScraper
 
 class NYTimes(BaseScraper):
     def __init__(self):
@@ -40,3 +40,4 @@ class NYTimes(BaseScraper):
             ("div", {"class":"related-links-block"}),
             (lambda tag:tag.name=="div" and tag.get('class')==[],)
         ]
+        

@@ -1,5 +1,5 @@
-from scrapers.basescraper import BaseScraper
 import re
+from scrapers.basescraper import BaseScraper
 
 
 class APNews(BaseScraper):

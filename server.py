@@ -1,9 +1,7 @@
-from typing import get_args
-from flask import Flask, render_template, abort, redirect, request, jsonify
-from bson.json_util import dumps
 import json
-import re
 import yaml
+from flask import Flask, render_template, request
+from bson.json_util import dumps
 from utils.database_utils import get_article, get_database
 
 
@@ -17,7 +15,7 @@ host = config['HOST']
 port = config['PORT']
 
 @app.route('/<site>/<path:article>')
-def articleView(site, article):
+def article_view(site, article):
     return render_template("index.html", site=site, url=article)
 
 @app.route('/api', methods=['POST'])

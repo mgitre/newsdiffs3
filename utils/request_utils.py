@@ -1,6 +1,8 @@
 import requests
 
-#gets html for url, header magic
+# gets html for url, header magic
+
+
 def getHTML(url, return_updated_url=False):
     headers = [
         {
@@ -10,8 +12,7 @@ def getHTML(url, return_updated_url=False):
             "Upgrade-Insecure-Requests": "1",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36 Edg/85.0.564.44",
             "X-Amzn-Trace-Id": "Root=1-5f592eba-58fbe130d46d9e0ebd201bdc",
-        }
-    ]
+        }]
     request = requests.get(url, headers=headers[0])
     if return_updated_url:
         return request.text, request.url
