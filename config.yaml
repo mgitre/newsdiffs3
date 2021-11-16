@@ -2,3 +2,8 @@ MONGODB:
   HOST: 127.0.0.1
   PORT: 27017
   DATABASE: newsdiffs3
+
+SERVER:
+  PUBLIC_URL: http://127.0.0.1
+  HOST: localhost
+  PORT: 3301
