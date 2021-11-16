@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 class BaseScraper:
     def __init__(self):
-        pass
+        self.content_exclusions = []
     
     #gets urls to scrape by scraping a set of base pages
     def get_articles_from_pages(self, pages):
@@ -79,7 +79,7 @@ class BaseScraper:
         print(old_url, new_url, "doesnt already exist, adding")
         return False
     
-    def html_fix(text):
+    def html_fix(self, text):
         return text.replace("<", "&lt").replace(">", "&gt")
 
     def process_article(self, url):
@@ -116,10 +116,13 @@ class BaseScraper:
             
             #get the byline
             byline = None
-            for name, attrs in self.byline_matches:
+            for name, attrs, parent in self.byline_matches:
                 matchAttempt = soup.find(name, attrs)
                 if matchAttempt:
-                    bylinesoup = matchAttempt
+                    if parent:
+                        bylinesoup = matchAttempt.parent
+                    else:
+                        bylinesoup = matchAttempt
                     # fix to get rid of annoying extra text
                     for hidden in bylinesoup.find_all(attrs={"class": "hidden"}):
                         hidden.decompose()
@@ -135,6 +138,10 @@ class BaseScraper:
                 articlebody = soup.find(name, attrs)
                 #if it actually finds an article body
                 if articlebody:
+                    #exclusions = []
+                    for arguments in self.content_exclusions:
+                        for element in articlebody.find_all(*arguments):
+                            element.decompose()
                     paragraphs = []
                     #search for any text tags
                     for paragraph in articlebody.find_all(
@@ -166,7 +173,7 @@ class BaseScraper:
                 }
             )
         except Exception as e:
-            print(e)
+            print(url, "had error", e)
 
     def update_article(self, url, version):
         #if version is none, give up
@@ -193,6 +200,12 @@ class BaseScraper:
                 latest_version = ArticleVersion(stored_article["latest"])
                 #if not the same, then do similarity calculations and update
                 if version != latest_version:
+                    if len(stored_article['article_versions'])>=2 and version==ArticleVersion(stored_article['article_versions'][-2]):
+                        #skip weird issue where different article versions show up
+                        print(url, "DUPE BUT WEIRD")
+                        if (datetime.datetime.now()-stored_article['article_versions'][-2]['datetime'])<=datetime.timedelta(minutes=75):
+                            return
+                        
                     #save similarity info
                     version.total_similarity, version.similarities = version.get_similarity(latest_version)
                     stored_versions = stored_article["article_versions"]
