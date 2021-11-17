@@ -3,8 +3,6 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
         <!-- Bootstrap -->
@@ -139,15 +137,13 @@
             }
 
             //gets diffs from 2 inputs, and a cost
-            function get_diffs(original, newer, cost=4){
+            function get_diffs(original, newer, clean=true){
                 var dmp = new diff_match_patch();
                 dmp.Match_Distance=8000;
                 var a = word_character_replacement(original, newer);
                 var diffs = dmp.diff_lineMode_(a.chars1, a.chars2);
-                if(cost){
-                dmp.Diff_EditCost = cost;
-                //dmp.diff_cleanupSemantic(diffs);
-                dmp.diff_cleanupEfficiency(diffs);
+                if(clean){
+                dmp.diff_cleanupSemantic(diffs);
                 }
                 dmp.diff_charsToLines_(diffs, a.lineArray);
                 return diffs;
