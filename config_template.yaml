@@ -1,0 +1,25 @@
+#database config
+MONGODB:
+  HOST: 127.0.0.1
+  PORT: 27017
+  DATABASE: newsdiffs3
+
+SERVER:
+  #where nd will be accessible
+  PUBLIC_URL: http://127.0.0.1/
+
+  #where flask should host nd
+  HOST: localhost
+  PORT: 3301
+
+#config for email alerts
+EMAIL:
+  USE_EMAIL: false
+  #username for smtp server, generally just email address
+  USER: sender@example.com
+  PASSWORD: password1
+  #email to send alerts to
+  RECEIVER_EMAIL: receiver@example.com
+  #smtp server information
+  SMTP_SERVER: smtp.gmail.com
+  PORT: 465
