@@ -31,6 +31,7 @@ class NYTimes(BaseScraper):
         self.content_matches = [
             ("section", {"itemprop": "articleBody"}),
             ("section", {"name": "articleBody"}),
+            ("article", {})
         ]
         self.content_exclusions = [
             ("div",{"data-testid":"photoviewer-wrapper"}),
