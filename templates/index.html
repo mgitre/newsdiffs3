@@ -27,7 +27,7 @@
                     articledata=JSON.parse(xmlreq.responseText);
                     document.title = "Newsdiffs: "+articledata.latest.headline;
                     checkedBoxes = articledata.version_count > 1 ? ['0',''+(articledata.version_count-1)] : ['0'];
-                    document.getElementById("sidebar").appendChild(get_checkboxes(articledata));
+                    document.getElementById("sidebarwrapper").appendChild(get_checkboxes(articledata));
                     checkedBoxes.length==1 ? render_one() : render_diff();
                 $(":checkbox").on('click', function(){
                     checkboxChecked(this);
@@ -285,6 +285,8 @@
             </div>
             <div class="bodywrapper">
                 <div id="sidebar">
+                    <div id="sidebarwrapper">
+                    </div>
                 </div>
                 <div class="contentwrapper">
                     <div id="content">
