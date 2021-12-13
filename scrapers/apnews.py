@@ -13,6 +13,7 @@ class APNews(BaseScraper):
         self.headline_matches = [
             ("div", {"data-key": "card-headline"}),
             ("div", {"class": re.compile("headline-")}),
+            ("h1", {"class":re.compile("headline-")})
         ]
         self.subhead_matches = []
         self.byline_matches = [
@@ -24,5 +25,7 @@ class APNews(BaseScraper):
             ("article", {"class": re.compile("article-")}),
         ]
         self.content_exclusions = [
-            ("div", {"class": re.compile("Component-hubPeekEmbed-")})
+            ("div", {"class": re.compile("Component-hubPeekEmbed-")}),
+            ("div", {"data-key": "feed-card-hub-peak"}),
+            ("h1", {"class":re.compile("headline-")})
         ]
