@@ -225,6 +225,7 @@ class BaseScraper:
                         },
                     )
                     print(url, len(stored_versions))
+                    return version, len(stored_versions)
         except Exception as e:
             print(e)
 
