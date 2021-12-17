@@ -15,3 +15,6 @@ class HuffingtonPost(BaseScraper):
         self.content_matches = [
             ("section", {"id": "entry-body"}),
         ]
+        self.content_exclusions = [
+            ("aside", {"class":"cli-related-articles"}),
+        ]

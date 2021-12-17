@@ -13,3 +13,4 @@ class FoxNews(BaseScraper):
         self.subhead_matches = [("h2", {"class": "sub-headline"})]
         self.byline_matches = [("div", {"class": "author-byline"}, False)]
         self.content_matches = [("div", {"class": "article-body"})]
+        self.content_exclusions = [("div", {"class": "video-ct"})]
