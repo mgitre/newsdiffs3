@@ -21,7 +21,7 @@
             var url = "{{url}}";
             var site = "{{site}}";
             const xmlreq = new XMLHttpRequest();
-            xmlreq.open("POST", "http://127.0.0.1:3301/api");
+            xmlreq.open("POST", "/api");
             xmlreq.onreadystatechange=function(){
                 if(xmlreq.readyState==4 && xmlreq.status==200){
                     articledata=JSON.parse(xmlreq.responseText);
