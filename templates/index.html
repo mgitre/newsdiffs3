@@ -256,12 +256,12 @@
                 var subheaddiff = diff_text(version1.subhead, version2.subhead);
                 var bylinediff = diff_text(version1.byline, version2.byline);
                 var contentdiff = diff_text_with_html(version1.content, version2.content);
-                document.getElementById("content").innerHTML=`<h1>${headlinediff}</h1><h4>${subheaddiff}</h4><h6>${bylinediff}</h6><hr>${contentdiff}`;
+                document.getElementById("content").innerHTML=`<h1>${headlinediff}</h1><h5>${subheaddiff}</h5><h6>${bylinediff}</h6><hr>${contentdiff}`;
             }
 
             function render_one(){
                 var version = articledata.article_versions[checkedBoxes[0]];
-                document.getElementById("content").innerHTML=`<h1>${version.headline||''}</h1><h4>${version.subhead||''}</h4><h6>${version.byline||''}</h6><hr>${version.content||''}`;
+                document.getElementById("content").innerHTML=`<h1>${version.headline||''}</h1><h5>${version.subhead||''}</h5><h6>${version.byline||''}</h6><hr>${version.content||''}`;
             }
         </script>
     </head>
