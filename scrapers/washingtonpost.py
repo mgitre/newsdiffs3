@@ -4,7 +4,7 @@ from scrapers.basescraper import BaseScraper
 class WashingtonPost(BaseScraper):
     def __init__(self):
         super().__init__()
-        self.url_format = r"https://www\.washingtonpost\.com/(?:politics|nation|world|elections|us-policy)/(?:[^/]*/)?(?:[^/]*/)?\d{4}/\d{2}/\d{2}/(?:[^/]*/|[^.]*.html)"
+        self.url_format = r"https://www\.washingtonpost\.com/(?:politics|nation|world|elections|us-policy|business|entertainment|travel|advice|obituaries)/(?:[^/]*/)?(?:[^/]*/)?\d{4}/\d{2}/\d{2}/(?:[^/]*/|[^.]*.html)"
         self.base_url = "https://washingtonpost.com"
         self.starting_pages = ["https://washingtonpost.com"]
         self.name = "washingtonpost"
