@@ -5,7 +5,7 @@ from diff_match_patch import diff_match_patch
 class ArticleVersion:
     #loads arguments into variables
     def __init__(self, dictionary):
-        self.datetime = dictionary.get("datetime") or datetime.datetime.now()
+        self.datetime = dictionary.get("datetime") or datetime.datetime.utcnow()
         self.headline = dictionary.get("headline")
         self.subhead = dictionary.get("subhead")
         self.byline = dictionary.get("byline")

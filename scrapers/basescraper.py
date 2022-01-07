@@ -204,7 +204,7 @@ class BaseScraper:
                         version == ArticleVersion(stored_article['article_versions'][-2]):
                         # skip weird issue where different article versions show up
                         print(url, "DUPE BUT WEIRD")
-                        if (datetime.datetime.now()-stored_article['article_versions'][-2]['datetime'])\
+                        if (datetime.datetime.utcnow()-stored_article['article_versions'][-2]['datetime'])\
                             <= datetime.timedelta(minutes=75):
                             return
 
@@ -217,7 +217,7 @@ class BaseScraper:
                         {"url": url},
                         {
                             "$set": {
-                                "last_modified": datetime.datetime.now(),
+                                "last_modified": datetime.datetime.utcnow(),
                                 "article_versions": stored_versions + [vars(version)],
                                 "latest": vars(version),
                                 "version_count": len(stored_versions) + 1,
