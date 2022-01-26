@@ -148,7 +148,8 @@
                 var a = word_character_replacement(original, newer);
                 var diffs = dmp.diff_lineMode_(a.chars1, a.chars2);
                 if(clean){
-                dmp.diff_cleanupSemantic(diffs);
+                dmp.Diff_EditCost=12;
+                dmp.diff_cleanupEfficiency(diffs);
                 }
                 dmp.diff_charsToLines_(diffs, a.lineArray);
                 return diffs;

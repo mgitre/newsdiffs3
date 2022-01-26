@@ -189,7 +189,7 @@ class BaseScraper:
                 collection.insert(
                     {
                         "url": url,
-                        "last_modified": datetime.datetime.now(),
+                        "last_modified": datetime.datetime.utcnow(),
                         "article_versions": [vars(version)],
                         "latest": vars(version),
                         "version_count": 1,
