@@ -14,12 +14,13 @@ base_url = config['PUBLIC_URL']
 host = config['HOST']
 port = config['PORT']
 
+
 @app.route('/<site>/<path:article>')
 def article_view(site, article):
     return render_template("article.html", site=site, url=article)
 
 @app.route('/<path:article>')
-def article_view(site, article):
+def article_view_2(article):
     return render_template("article.html", site='', url=article)
 
 @app.route('/api/article', methods=['POST'])
