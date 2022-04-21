@@ -26,4 +26,10 @@ def do_api_shit():
     collection = get_database()['articles']
     return dumps(get_article(collection, url))
 
+
+@app.route('/')
+def render_index():
+    return render_template("index.html")
+
+
 app.run(port=port, host=host)
