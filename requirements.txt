@@ -1,5 +1,5 @@
 beautifulsoup4
-diff_match_patch
+diff-match-patch
 Flask
 pymongo
 PyYAML
