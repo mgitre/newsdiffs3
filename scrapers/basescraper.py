@@ -53,9 +53,9 @@ class BaseScraper:
 
     # loads articles from database that were last modified within (default: 7) days
     def get_articles_from_database(self):
-        collection = get_database()[self.name]
+        collection = get_database()['articles']
         # add days=x to change how many days to look back
-        articles = get_article_urls_within_time(collection)
+        articles = get_article_urls_within_time(collection, self.name)
         return articles
 
     # gets articles from scraping and from database, and merges them.
@@ -68,7 +68,7 @@ class BaseScraper:
 
     # updates url of database entry
     def update_url(self, old_url, new_url):
-        collection = get_database()[self.name]
+        collection = get_database()['articles']
         # if the new url is already in the database, delete the key
         # for the old url and tell the processing function to not scrape it
         if collection.find_one({"url": new_url}):
@@ -181,7 +181,7 @@ class BaseScraper:
             return
         # try/except everything, nothing but best practices here
         try:
-            collection = get_database()[self.name]
+            collection = get_database()['articles']
             # tries to load stored article
             stored_article = get_article(collection, url)
             # if it doesnt exist, create it

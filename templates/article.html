@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <!-- Bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script> -->
+        
+        <!-- JQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js" integrity="sha512-5YZxUisfaneUbwv58nPp10qwt6DefHuJ+iAfvPoABZAYwLg4WGJHITaLpyyxJdrljfc0ggUoWc87Z0lfoDS84Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        
+        
+        <link rel="stylesheet" href="/static/styles.css">
+
+        <script>
+            var url = "{{url}}";
+            var site = "{{site}}";
+            const xmlreq = new XMLHttpRequest();
+            xmlreq.open("POST", "/api/article");
+            xmlreq.onreadystatechange=function(){
+                if(xmlreq.readyState==4 && xmlreq.status==200){
+                    articledata=JSON.parse(xmlreq.responseText);
+                    document.title = "Newsdiffs: "+articledata.latest.headline;
+                    checkedBoxes = articledata.version_count > 1 ? ['0',''+(articledata.version_count-1)] : ['0'];
+                    document.getElementById("sidebarwrapper").appendChild(get_checkboxes(articledata));
+                    checkedBoxes.length==1 ? render_one() : render_diff();
+                $(":checkbox").on('click', function(){
+                    checkboxChecked(this);
+               })
+                    //console.log(xmlreq.responseText);
+                }
+            }
+            xmlreq.send(JSON.stringify({url:url, site:site}));
+
+
+            function menu(){
+                var width = document.getElementById("sidebar").style.width;
+                document.getElementById("sidebar").classList.toggle('sidebaropen');
+            }
+
+            function group_by_date(versions){
+                var dates = {};
+                for(var i=0; i<versions.length; i++){
+                    var date=new Date(versions[i]['datetime']['$date']);
+                    var dateString = date.toLocaleDateString();
+                    if (dateString in dates){
+                        dates[dateString].push(date.toLocaleTimeString('en-US',options={hour:'numeric', minute:'numeric'}));
+                    } else {
+                        dates[dateString]=[date.toLocaleTimeString('en-US',options={hour:'numeric', minute:'numeric'})];
+                    }
+                }
+                return dates;
+            }
+
+            function get_checkboxes(){
+                var grouped = group_by_date(articledata['article_versions']);
+                var keys = Object.keys(grouped);
+                var fragment = document.createDocumentFragment();
+                var index=0;
+                for(const key of keys){
+                    var entry = document.createElement("div");
+                    entry.className = "sidebarentry";
+                    entry.innerHTML+=(`<h4>${key}</h4><hr>`);
+                    for(const time of grouped[key]){
+                        var similarity = articledata.article_versions[index].total_similarity || 1;
+                        var adjusted = (similarity-0.5)*2;
+                        var red = adjusted>0.5 ? 255-(adjusted-0.5)*510: 255;
+                        var green = adjusted<0.5 ? (adjusted)*510: 255;
+                        var percent = Math.floor(similarity*100);
+                        var checked = (index==0 || index==articledata.version_count-1) ? "checked" : "";
+                        entry.innerHTML+=(`<div class="checkboxwrapper ${checked}"><label class="checkboxlabel"><input type="checkbox" id="${index}" name="checkbox" class="form-check-input" ${checked}>${time} <div class="indicator" style="background-color:rgb(${red},${green},0)">${percent}%</div> </label></div>`);
+                        index++;
+                    }
+                    fragment.appendChild(entry);
+                    fragment.innerHTML+=("</br>")
+                    
+                }
+                return fragment;
+            }
+            
+            //diffing stuff
+            var tag_array = ["<p>","<h1>","<h2>","<h3>","<h4>","<h5>","<h6>","</p>","</h1>","</h2>","</h3>","</h4>","</h5>","</h6>"];
+            var diff_tags = ["del","ins"]
+            //replaces each html tag with a corresponding character code way out of range of anything plausible
+            function replace_html_tags(text){
+                for (var i = 0; i < tag_array.length; i++){
+                    tag = tag_array[i];
+                    text = text.replace(new RegExp(tag, 'g'), String.fromCharCode(2048+i));
+                }
+                return text;
+            }
+
+            //self-eplanatory. reinserts html tags into text
+            function reinsert_html_tags(text){
+                //update this regex if adding support for more tags
+                text = text.replace(/([\u0800-\u080d])/g, function(match){
+                    var index = match.charCodeAt(0)-2048;
+                    return tag_array[index];
+                })
+                return text;
+            }
+
+
+            //replaces every word with a unique character
+            //mostly stolen from diff_match_patch's lineMode code
+            function word_character_replacement(text1, text2) {
+                var lineArray = [];  // e.g. lineArray[4] == 'Hello'
+                var lineHash = {};   // e.g. lineHash['Hello'] == 4
+
+                lineArray[0] = '';
+                lineHash['\n'] = 10;
+
+                function diff_linesToCharsMunge_(text) {
+                    var chars = '';
+                    var lineArrayLength = lineArray.length;
+
+                    var lines = text.split(/([^a-zA-Z0-9])/).filter(function(n) {return n});
+                    
+                    for(const line of lines){
+                        if (lineHash.hasOwnProperty ? lineHash.hasOwnProperty(line) :
+                        (lineHash[line] !== undefined)) {
+                            chars += String.fromCharCode(lineHash[line]);
+                        } else {
+                            if(lineArrayLength==10){
+                                lineArray[lineArrayLength++] = '\n';
+                            }
+                            chars += String.fromCharCode(lineArrayLength);
+                            lineHash[line] = lineArrayLength;
+                            lineArray[lineArrayLength++] = line;
+                        }
+                    }
+                    return chars;
+                }
+                var chars1 = diff_linesToCharsMunge_(text1);
+                var chars2 = diff_linesToCharsMunge_(text2);
+                return {chars1: chars1, chars2: chars2, lineArray: lineArray};
+            }
+
+            //gets diffs from 2 inputs, and a cost
+            function get_diffs(original, newer, clean=true){
+                var dmp = new diff_match_patch();
+                dmp.Match_Distance=8000;
+                var a = word_character_replacement(original, newer);
+                var diffs = dmp.diff_lineMode_(a.chars1, a.chars2);
+                if(clean){
+                dmp.Diff_EditCost=12;
+                dmp.diff_cleanupEfficiency(diffs);
+                }
+                dmp.diff_charsToLines_(diffs, a.lineArray);
+                return diffs;
+            }
+
+            //gets html from those diffs. this is janky rn
+            function get_html_from_html_diffs(diffs){
+                var output='';
+                for (const diff of diffs){
+                    //if the segment is the same across both texts, append without any modification
+                    var diff_type = diff[0];
+                    if (diff_type==0) {
+                        output += diff[1];
+                        continue;
+                    }
+                    //splits the text at all placeholder html tags, keeping them in the array
+                    //if adding more tags, adjust the regex accordingly
+                    var split = diff[1].split(/([\u0800-\u080d])/g);
+
+                    //iterate over each segment in split
+                    for (var i=0; i < split.length; i++){
+
+                        //if it's an html tag, don't mess with it
+                        //this works because when splitting at a delimiter (while keeping
+                        //the delimiter) it alternates delimiters and content
+                        if (i%2==1){
+                            output += split[i];
+                        }
+                        //if it's not an html tag, mess with it
+                        else {
+                            //this is janky as hell but who cares, i like it
+                            //maps difftype to what tag to use, since deletion is -1 and insertion is 1
+                            var diff_tag = diff_tags[(diff_type+1)/2];
+
+                            //wraps segment in relevant tags
+                            var segment = `<${diff_tag}>${split[i]}</${diff_tag}>`;
+                            output += segment;
+                        }
+                    }
+                }
+
+                //reinsert html tags
+                return reinsert_html_tags(output);
+            }
+
+
+            //this wraps everything, when in doubt just use this
+            function diff_text_with_html(text1, text2){
+                text1 = text1 || '';
+                text2 = text2 || '';
+                text1 = replace_html_tags(text1);
+                text2 = replace_html_tags(text2);
+                diffs = get_diffs(text1, text2);
+                pretty_html = get_html_from_html_diffs(diffs);
+                return pretty_html;
+            }
+
+            function diff_text(text1, text2){
+                text1 = text1 || '';
+                text2 = text2 || '';
+                var output='';
+                var diffs = get_diffs(text1, text2);
+                for(const diff of diffs){
+                    if(diff[0]==0){
+                        output+=diff[1];
+                    } else { 
+                        var diff_tag = diff_tags[(diff[0]+1)/2];
+                        output += `<${diff_tag}>${diff[1]}</${diff_tag}>`;
+                    }
+                }
+                return output;
+            }
+
+            function checkboxChecked(box){
+                console.log(box, checkedBoxes);
+                if(!box.checked){
+                    box.parentElement.parentElement.classList.remove("checked")
+                    checkedBoxes = checkedBoxes.filter(function(x){return x!=box.id});
+                    if(checkedBoxes.length){
+                        render_one();
+                    }
+                } else {
+                    box.parentElement.parentElement.classList.add("checked");
+                    checkedBoxes.push(box.id);
+                    if(checkedBoxes.length>2){
+                        var uncheck = document.getElementById(checkedBoxes.shift());
+                        uncheck.checked=false;
+                        uncheck.parentElement.parentElement.classList.remove("checked");
+                    }
+                    if (checkedBoxes.length==2){
+                        render_diff();
+                    } else {
+                        render_one();
+                    }
+                }
+                console.log(checkedBoxes);
+            }
+            
+            function render_diff(){
+                var a = checkedBoxes[0] > checkedBoxes[1] ? checkedBoxes[1]:checkedBoxes[0];
+                var b = checkedBoxes[0] > checkedBoxes[1] ? checkedBoxes[0]:checkedBoxes[1];
+                var version1 = articledata.article_versions[a];
+                var version2 = articledata.article_versions[b];
+                var headlinediff = diff_text(version1.headline, version2.headline);
+                var subheaddiff = diff_text(version1.subhead, version2.subhead);
+                var bylinediff = diff_text(version1.byline, version2.byline);
+                var contentdiff = diff_text_with_html(version1.content, version2.content);
+                document.getElementById("content").innerHTML=`<h1>${headlinediff}</h1><h5>${subheaddiff}</h5><h6>${bylinediff}</h6><hr>${contentdiff}`;
+            }
+
+            function render_one(){
+                var version = articledata.article_versions[checkedBoxes[0]];
+                document.getElementById("content").innerHTML=`<h1>${version.headline||''}</h1><h5>${version.subhead||''}</h5><h6>${version.byline||''}</h6><hr>${version.content||''}`;
+            }
+        </script>
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="navheader">
+                <div class="navcontainer">
+                    <div class="naventry menuicon"><a onclick="menu()"><i class="fa fa-bars"></i></a></div>
+                    <div class="naventry"><a href="/">newsdif</a></div>
+                </div>
+                <div class="naventry livearticle">
+                    <div class="livearticlewrapper">
+                        <a id="livearticle" href="{{url}}"> View Live Article </a>
+                    </div>
+                </div>
+                <!--<li class="navsearch"><input class="navsearch" id="navsearch" placeholder="Enter article URL"><button onclick="search()"><i class="fa fa-search"></i></button></li>-->
+                <div class="navcontainer">
+                    <!-- <div class="naventry "><a href="https://example.com/TODO">About</a></div> -->
+                    <div class="naventry "><a href="https://github.com/mgitre/newsdiffs3">GitHub</a></div>
+                </div>
+            </div>
+            <div class="bodywrapper">
+                <div id="sidebar">
+                    <div id="sidebarwrapper">
+                    </div>
+                </div>
+                <div class="contentwrapper">
+                    <div id="body">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

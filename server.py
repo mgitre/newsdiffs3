@@ -16,14 +16,14 @@ port = config['PORT']
 
 @app.route('/<site>/<path:article>')
 def article_view(site, article):
-    return render_template("index.html", site=site, url=article)
+    return render_template("article.html", site=site, url=article)
 
-@app.route('/api', methods=['POST'])
+@app.route('/api/article', methods=['POST'])
 def do_api_shit():
     req=json.loads(request.data)
     url = req['url']
     site = req['site']
-    collection = get_database()[site]
+    collection = get_database()['articles']
     return dumps(get_article(collection, url))
 
 app.run(port=port, host=host)
