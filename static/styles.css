@@ -16,11 +16,29 @@ html, body {
     flex:0 0 52px;
     display:flex;
     flex-direction:row;
+    position: relative;
+    min-width:100%;
 }
 
+.navtextbox {
+    flex: 1 0 auto;
+    flex-grow:1;
+    padding: 8px 8px;
+    display: inline-block;
+    border: 0px;
+    outline: 1px solid grey;
+    border-radius: 4px;
+    margin: 8px;
+    height:36px;
+}
 /* .navcontainer{
     min-height:52px;
 } */
+
+.centeredheader {
+    width: 100%;
+    text-align: center;
+}
 
 .naventry {
     float: left;
@@ -39,14 +57,29 @@ html, body {
     cursor: pointer;
 }
 
+.navtext {
+    display: inline-block;
+    padding: 14px 16px;
+    color: black;
+}
+
 .naventry a:hover {
     background-color: #ddd;
+    outline: 1px solid grey;
 }
 
 .bodywrapper{
     display:flex;
     flex-direction:row;
     flex:1 0 0;
+}
+
+.bodysection {
+    display:flex;
+    flex: 1 0 0;
+    min-height: 100%;
+    outline: 0.5px solid grey;
+    position: relative; 
 }
 
 #sidebar {
