@@ -56,13 +56,25 @@
                             var entry=get_article_entry(article.latest, article.outlet, article.version_count, article.url);
                             document.getElementById('entries').appendChild(entry);
                         }
+                        page++;
+                        enqueued=false;
                     }
                 }
                 xmlreq.send(JSON.stringify({outlets:outlets, page_length:page_length, page_num: page_num}));
             }
             page=1;
             page_length = Math.max(10, Math.floor(window.innerHeight/100));
+            enqueued = false;
             get_articles(['nytimes','washingtonpost'], page_length, page);
+            
+            document.getElementByID("entrywrapper").addEventListener("scroll", function(){
+                var wrapper = document.getElementByID("entrywrapper");
+                if(wrapper.scrollHeight-wrapper.scrollTop-wrapper.clientHeight<100 && !enqueued){
+                    enqueued = true;
+                    get_articles(['nytimes','washingtonpost'], page_length, page);
+                }
+            });
+
         </script>
     </head>
     <body>
@@ -83,7 +95,7 @@
                     <div id="sidebarwrapper">
                     </div>
                 </div>
-                <div class="contentwrapper">
+                <div class="contentwrapper" id="entrywrapper">
                     <div id="entries">
                         <div class="articleentry">
                             <div class="articleinfo">
