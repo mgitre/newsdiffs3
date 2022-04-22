@@ -2,7 +2,7 @@ import json
 import yaml
 from flask import Flask, render_template, request
 from bson.json_util import dumps
-from utils.database_utils import get_article, get_database
+from utils.database_utils import get_article, get_database, get_articles_for_homepage
 
 
 app = Flask(__name__)
@@ -31,6 +31,13 @@ def do_api_shit():
     collection = get_database()['articles']
     return dumps(get_article(collection, url))
 
+@app.route('/api/homepage', methods=['POST'])
+def get_homepage():
+    req = json.loads(request.data)
+    outlets = req['outlets']
+    page_length = req['page_length']
+    page_num = req['page_num']
+    return dumps(get_articles_for_homepage(outlets, page_length, page_num))
 
 @app.route('/')
 def render_index():
