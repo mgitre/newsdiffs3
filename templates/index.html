@@ -20,7 +20,7 @@
                 document.getElementById("sidebar").classList.toggle('sidebaropen');
             }
 
-            function get_article_entry(latest, outlet, count){
+            function get_article_entry(latest, outlet, count, url){
                 var headline = latest.headline;
                 var date = new Date(latest['datetime']['$date']);
                 var datestring = date.toLocaleDateString() + ' ' + date.toLocaleTimeString('en-US',options={hour:'numeric', minute:'numeric'});
@@ -35,11 +35,11 @@
                 var fragment = document.createDocumentFragment();
                 var entry = document.createElement("div");
                 entry.className = "articleentry";
+                entry.onclick=function(){window.location="/article/"+url};
                 entry.innerHTML = 
                 `<div class="articleinfo">
                     ${outlet}<h3 class="headline">${headline}</h3>
                     </div>
-                    <hr>
                     <div class="similarity">Last changed: ${datestring}</br>Last change similarity: <div class="indicator" style="background-color:rgb(${red},${green},0)">${percent}%</div></br>Total changes: ${count}</div>
 `;
                 fragment.appendChild(entry);
@@ -53,13 +53,16 @@
                     if(xmlreq.readyState==4 && xmlreq.status==200){
                         var articles=JSON.parse(xmlreq.responseText);
                         for(const article of articles){
-                            var entry=get_article_entry(article.latest, article.outlet, article.version_count);
+                            var entry=get_article_entry(article.latest, article.outlet, article.version_count, article.url);
                             document.getElementById('entries').appendChild(entry);
                         }
                     }
                 }
                 xmlreq.send(JSON.stringify({outlets:outlets, page_length:page_length, page_num: page_num}));
             }
+            page=1;
+            page_length = Math.max(10, Math.floor(window.innerHeight/100));
+            get_articles(['nytimes','washingtonpost'], page_length, page);
         </script>
     </head>
     <body>
