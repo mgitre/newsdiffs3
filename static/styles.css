@@ -225,6 +225,13 @@ h4 {
 
 }
 
+#entries {
+    left:0;
+    right:0;
+    color: black;
+    position:absolute;
+}
+
 @media (max-width: 700px) {
     .articleentry {
         height: 200px !important;
