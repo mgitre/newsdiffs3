@@ -19,6 +19,11 @@ class ArticleVersion:
         self_vars = vars(self)
         other_vars = vars(other)
         for key in weights:
+            #if both don't exist, don't count it
+            if not self_vars[key] and not other_vars[key]:
+                similarities[key] = 1
+                weights[key]=0
+                continue
             #if they're exactly the same, set to 1 and continue
             if self_vars[key] == other_vars[key]:
                 total_similarity += weights[key]
@@ -30,6 +35,9 @@ class ArticleVersion:
             #diff the parts
             dmp = diff_match_patch()
             diff = dmp.diff_main(self_vars[key], other_vars[key])
+            #clean them up to make similarity more realistic
+            dmp.Diff_EditCost=12
+            dmp.diff_cleanupEfficiency(diff)
             # first part is how much of the text is shared, second part is total length
             similarity = sum(
                 [len(text) for operation, text in diff if operation == 0]
@@ -37,7 +45,7 @@ class ArticleVersion:
             similarities[key] = similarity
             total_similarity += weights[key] * similarity
         #returns stuff
-        return total_similarity, similarities
+        return total_similarity/sum(list(weights.values())), similarities
 
     #defines equality to ignore time/similarities
     def __eq__(self, other):
