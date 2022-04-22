@@ -32,6 +32,6 @@ class WashingtonPost(BaseScraper):
         ]
         self.content_exclusions = [
             ("a",{"data-qa": "intersitial-link"}),
-            ("figure",{})
-            ("div", {"data-qa": "article-body-ad"})
+            ("figure",{}),
+            ("div", {"data-qa": "article-body-ad"}),
         ]
