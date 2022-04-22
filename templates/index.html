@@ -68,7 +68,7 @@
             get_articles(['nytimes','washingtonpost'], page_length, page);
             
             document.getElementByID("entrywrapper").addEventListener("scroll", function(){
-                var wrapper = document.getElementByID("entrywrapper");
+                var wrapper = document.getElementById("entrywrapper");
                 if(wrapper.scrollHeight-wrapper.scrollTop-wrapper.clientHeight<100 && !enqueued){
                     enqueued = true;
                     get_articles(['nytimes','washingtonpost'], page_length, page);
