@@ -26,11 +26,12 @@ class WashingtonPost(BaseScraper):
             ("a", {"data-qa": "author-name"}, False),
         ]
         self.content_matches = [
-            ("div", {"class": "article-body"}),
             ("article", {"data-qa": "main"}),
+            ("div", {"class": "article-body"}),
             ("div", {"class": "main"}),
         ]
         self.content_exclusions = [
             ("a",{"data-qa": "intersitial-link"}),
             ("figure",{})
+            ("div", {"data-qa": "article-body-ad"})
         ]
