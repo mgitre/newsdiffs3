@@ -1,6 +1,6 @@
 import json
 import yaml
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Response
 from bson.json_util import dumps
 from utils.database_utils import get_article, get_database, get_articles_for_homepage
 
@@ -37,7 +37,7 @@ def get_homepage():
     outlets = req['outlets']
     page_length = req['page_length']
     page_num = req['page_num']
-    return dumps(get_articles_for_homepage(outlets, page_length, page_num))
+    return Response(response=dumps(get_articles_for_homepage(outlets, page_length, page_num)), mimetype="application/json", status=200)
 
 @app.route('/')
 def render_index():
