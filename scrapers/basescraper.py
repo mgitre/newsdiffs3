@@ -206,7 +206,7 @@ class BaseScraper:
                         # skip weird issue where different article versions show up
                         print(url, "DUPE BUT WEIRD")
                         if (datetime.datetime.utcnow()-stored_article['article_versions'][-2]['datetime'])\
-                            <= datetime.timedelta(minutes=75):
+                            <= datetime.timedelta(minutes=150):
                             return
 
                     # save similarity info
