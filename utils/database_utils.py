@@ -39,7 +39,7 @@ def get_articles_for_homepage(outlets, page_length, page_count):
     collection = get_database()['articles']
     search = collection.find({"version_count": {"$gt": 1}, "outlet":{"$in":outlets}}, {"url": True, "latest": True, "version_count": True, "outlet": True, "_id": False})
     skips = page_length * (page_count-1)
-    cursor = articles.skip(skips).limit(page_length)
+    cursor = search.skip(skips).limit(page_length)
     articles = [article for article in cursor]
     for article in articles:
         del(article['latest']['content'])
