@@ -66,14 +66,14 @@
             page_length = Math.max(10, Math.floor(window.innerHeight/100));
             enqueued = false;
             get_articles(['nytimes','washingtonpost'], page_length, page);
-            
+            window.onload = function(){
             document.getElementById("entrywrapper").addEventListener("scroll", function(){
                 var wrapper = document.getElementById("entrywrapper");
                 if(wrapper.scrollHeight-wrapper.scrollTop-wrapper.clientHeight<100 && !enqueued){
                     enqueued = true;
                     get_articles(['nytimes','washingtonpost'], page_length, page);
                 }
-            });
+            });};
 
         </script>
     </head>
@@ -97,12 +97,6 @@
                 </div>
                 <div class="contentwrapper" id="entrywrapper">
                     <div id="entries">
-                        <div class="articleentry">
-                            <div class="articleinfo">
-                            nytimes<h3 class="headline">test headlinee jkdsalfjsdlkf kalsdjflaskd the quick brown fox ksaldfjalsdkfj</h3>
-                            </div>
-                            <div class="similarity">Last changed: 3/5/2021 10:19</br>Last change similarity: <div class="indicator">10%</div></br>Total changes: 5</div>
-                        </div>
                     </div>
                 </div>
             </div>
