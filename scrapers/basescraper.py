@@ -193,6 +193,7 @@ class BaseScraper:
                         "article_versions": [vars(version)],
                         "latest": vars(version),
                         "version_count": 1,
+                        "outlet": self.name
                     }
                 )
             # if it does exist, check to see if version is the same as latest version
