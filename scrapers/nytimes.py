@@ -40,5 +40,6 @@ class NYTimes(BaseScraper):
             ("section",{"role":"complementary"}),
             ("div", {"class":"related-links-block"}),
             (lambda tag:tag.name=="div" and tag.get('class')==[],)
+            ("div", {"role":"complementary"})
         ]
         
