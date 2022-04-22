@@ -12,27 +12,83 @@
         <!-- JQuery -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-        <link rel="stylesheet" href="file:///C:/Users/maxfi/Documents/newsdiffs3/static/styles.css">
+        <link rel="stylesheet" href="/static/styles.css">
 
         <script>
+            function menu(){
+                var width = document.getElementById("sidebar").style.width;
+                document.getElementById("sidebar").classList.toggle('sidebaropen');
+            }
+
+            function get_article_entry(latest, outlet, count){
+                var headline = latest.headline;
+                var date = new Date(latest['datetime']['$date']);
+                var datestring = date.toLocaleDateString() + ' ' + date.toLocaleTimeString('en-US',options={hour:'numeric', minute:'numeric'});
+                
+                //similarity indicator
+                var similarity = latest.total_similarity;
+                var adjusted = (similarity-0.5)*2;
+                var red = adjusted>0.5 ? 255-(adjusted-0.5)*510: 255;
+                var green = adjusted<0.5 ? (adjusted)*510: 255;
+                var percent = Math.floor(similarity*100);
+
+                var fragment = document.createDocumentFragment();
+                var entry = document.createElement("div");
+                entry.className = "articleentry";
+                entry.innerHTML = 
+                `<div class="articleinfo">
+                    ${outlet}<h3 class="headline">${headline}</h3>
+                    </div>
+                    <hr>
+                    <div class="similarity">Last changed: ${datestring}</br>Last change similarity: <div class="indicator" style="background-color:rgb(${red},${green},0)">${percent}%</div></br>Total changes: ${count}</div>
+`;
+                fragment.appendChild(entry);
+                return fragment;
+            }
             
+            function get_articles(outlets, page_length, page_num){
+                const xmlreq = new XMLHttpRequest();
+                xmlreq.open("POST", "/api/homepage");
+                xmlreq.onreadystatechange=function(){
+                    if(xmlreq.readyState==4 && xmlreq.status==200){
+                        var articles=JSON.parse(xmlreq.responseText);
+                        for(const article of articles){
+                            var entry=get_article_entry(article.latest, article.outlet, article.version_count);
+                            document.getElementById('entries').appendChild(entry);
+                        }
+                    }
+                }
+                xmlreq.send(JSON.stringify({outlets:outlets, page_length:page_length, page_num: page_num}));
+            }
         </script>
     </head>
     <body>
         <div class="wrapper">
             
-            <div class="navheader" style="background-color: #eee">
-                <div class="navtext">Newsdiffs Search</div>
-                <input class='navtextbox' type='text' placeholder="Article URL"></input>
-                <div class="navcontainer">
-                    <div class="naventry menuicon"><a onclick="menu()"><i class="fa fa-search"></i> </a></div>
-                </div>
+            <div class="navheader">
+                <div class="naventry menuicon"><a onclick="menu()"><i class="fa fa-bars"></i> Filters</a></div>
+                <!--<div class="navtext">Paste URL: </div>-->
+                <form autocomplete="off" style="flex: 1 0 auto; padding: 8px; margin: 0;" onsubmit="window.location='/'+document.getElementById('search').value; return false;">
+                <input class="navtextbox" id="search" type='text' placeholder="Find article by URL"></input>
+                
+                </form>
+                <div class="naventry menuicon"><a onclick="window.location='/'+document.getElementById('search').value;"><i class="fa fa-search"></i> </a></div>
+               
             </div>
             <div class="bodywrapper">
-                <div class="contentwrapper">
-                    <div class="bodysection">
-                        Recently Changed
+                <div id="sidebar">
+                    <div id="sidebarwrapper">
                     </div>
+                </div>
+                <div class="contentwrapper" id="entries">
+                    
+                    <div class="articleentry">
+                        <div class="articleinfo">
+                        nytimes<h3 class="headline">test headlinee jkdsalfjsdlkf kalsdjflaskd the quick brown fox ksaldfjalsdkfj</h3>
+                        </div>
+                        <div class="similarity">Last changed: 3/5/2021 10:19</br>Last change similarity: <div class="indicator">10%</div></br>Total changes: 5</div>
+                    </div>
+                    
                 </div>
             </div>
         </div>
