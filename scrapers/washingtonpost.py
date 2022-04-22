@@ -34,4 +34,5 @@ class WashingtonPost(BaseScraper):
             ("a",{"data-qa": "intersitial-link"}),
             ("figure",{}),
             ("div", {"data-qa": "article-body-ad"}),
+            ("div", {"class": "hide-for-print"}),
         ]
