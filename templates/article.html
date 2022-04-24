@@ -25,14 +25,18 @@
             xmlreq.onreadystatechange=function(){
                 if(xmlreq.readyState==4 && xmlreq.status==200){
                     articledata=JSON.parse(xmlreq.responseText);
-                    document.title = "Newsdiffs: "+articledata.latest.headline;
-                    checkedBoxes = articledata.version_count > 1 ? ['0',''+(articledata.version_count-1)] : ['0'];
-                    document.getElementById("sidebarwrapper").appendChild(get_checkboxes(articledata));
-                    checkedBoxes.length==1 ? render_one() : render_diff();
-                $(":checkbox").on('click', function(){
-                    checkboxChecked(this);
-               })
-                    //console.log(xmlreq.responseText);
+                    if(articledata){
+                        document.title = "Newsdiffs: "+articledata.latest.headline;
+                        checkedBoxes = articledata.version_count > 1 ? ['0',''+(articledata.version_count-1)] : ['0'];
+                        document.getElementById("sidebarwrapper").appendChild(get_checkboxes(articledata));
+                        checkedBoxes.length==1 ? render_one() : render_diff();
+                        $(":checkbox").on('click', function(){
+                            checkboxChecked(this);
+                        })
+                        //console.log(xmlreq.responseText);
+                    } else {
+                        document.getElementById("content").innerHTML="<h1>Sorry, article was not found.</h1>"
+                    }
                 }
             }
             xmlreq.send(JSON.stringify({url:url, site:site}));
