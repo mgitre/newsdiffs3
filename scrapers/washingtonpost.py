@@ -20,7 +20,7 @@ class WashingtonPost(BaseScraper):
         ]
         self.byline_matches = [
             ("span", {"data-sc-c":"author"}, False),
-            ("div", {"data-qa":"author-byline"}, False),
+            ("div", {"data-qa":"author-byline"}, True),
             ("div", {"class": "author-names"}, False),
             ("div", {"class": "contributor"}, False),
             ("a", {"data-qa": "author-name"}, False),
